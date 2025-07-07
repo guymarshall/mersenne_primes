@@ -3,27 +3,28 @@ use std::process::exit;
 use indicatif::{ProgressBar, ProgressStyle};
 use rug::Integer;
 
-fn is_prime(number: u64) -> bool {
-    if number < 2 {
-        return false;
-    }
-
-    if number == 2 || number == 3 {
-        return true;
-    }
-
-    if number % 2 == 0 || number % 3 == 0 {
-        return false;
-    }
-
-    let mut i: u64 = 5;
-    while i * i <= number {
-        if number % i == 0 || number % (i + 2) == 0 {
-            return false;
+macro_rules! is_prime {
+    ($number:expr) => {{
+        let number = $number;
+        if number < 2 {
+            false
+        } else if number == 2 || number == 3 {
+            true
+        } else if number % 2 == 0 || number % 3 == 0 {
+            false
+        } else {
+            let mut i: u64 = 5;
+            let mut result = true;
+            while i * i <= number {
+                if number % i == 0 || number % (i + 2) == 0 {
+                    result = false;
+                    break;
+                }
+                i += 6;
+            }
+            result
         }
-        i += 6;
-    }
-    true
+    }};
 }
 
 fn is_mersenne_prime(number: u64) -> bool {
@@ -58,7 +59,7 @@ fn main() {
     // let number: u64 = 15485863;
     // let number: u64 = 2147483647;
 
-    if !is_prime(number) {
+    if !is_prime!(number) {
         println!(
             "Exponent {number} is not prime. Lucas-Lehmer test is only valid for prime exponents."
         );
